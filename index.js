@@ -65,16 +65,19 @@ program
                 progressBar.start()
                 gitClone(repo, localpath).then(() => {
                     shell.rm('-rf', path.join(localpath, '.git'))
+                    try {
+                        const meta = {
+                                name: projectName,
+                                description: answers.description,
+                                author: answers.author
+                            },
+                            packageFileName = `${projectName}/package.json`,
+                            packageContent = JSON.parse(fs.readFileSync(packageFileName).toString()),
+                            packageResult = JSON.stringify(Object.assign(packageContent, meta), "", "\t")
+                        fs.writeFileSync(packageFileName, packageResult)
+                    }catch (e) {
 
-                    const meta = {
-                            name: projectName,
-                            description: answers.description,
-                            author: answers.author
-                        },
-                        packageFileName = `${projectName}/package.json`,
-                        packageContent = JSON.parse(fs.readFileSync(packageFileName).toString()),
-                        packageResult = JSON.stringify(Object.assign(packageContent, meta), "", "\t")
-                    fs.writeFileSync(packageFileName, packageResult)
+                    }
                     progressBar.finish()
                     console.log(symbols.success, chalk.green('模板初始化完成'))
                 }).catch(err => {
